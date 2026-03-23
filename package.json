@@ -1,0 +1,43 @@
+{
+  "name": "@sakamossan/get-path-js",
+  "version": "0.0.1",
+  "description": "CLI tool to generate path strings from template expressions",
+  "type": "module",
+  "bin": {
+    "get-path.js": "./dist/bin/get-path.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sakamossan/get-path.js.git"
+  },
+  "homepage": "https://github.com/sakamossan/get-path.js#readme",
+  "bugs": {
+    "url": "https://github.com/sakamossan/get-path.js/issues"
+  },
+  "license": "MIT",
+  "author": "sakamossan",
+  "keywords": ["cli", "path", "template"],
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "glob": "^11.0.0",
+    "neverthrow": "^8.1.1",
+    "zod": "^4.1.11",
+    "zx": "^8.5.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.15",
+    "tsx": "^4.19.3",
+    "typescript": "^5.5.4",
+    "vitest": "^3.2.1"
+  }
+}
