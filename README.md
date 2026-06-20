@@ -103,8 +103,17 @@ get-path.js '${os.hostname()}/${os.platform()}/${YYYY}${MM}${DD}'
 | `git.branch` | Current branch name |
 | `git.commit.short` | Abbreviated commit hash |
 | `git.commit.long` | Full commit hash |
+| `git.owner` | Repository owner (org/user) parsed from the `origin` remote URL |
+| `git.repo` | Repository name parsed from the `origin` remote URL |
 
 Git info is fetched only when the template contains `git.`. Using git variables outside a git repository results in an error.
+
+`git.owner` and `git.repo` are derived from the `origin` remote URL. Both scp-like (`git@github.com:owner/repo.git`) and URL (`https://github.com/owner/repo.git`) forms are supported. The remote is looked up only when `git.owner` or `git.repo` is used; if `origin` is not configured or its URL cannot be parsed, an error is raised.
+
+```bash
+get-path.js 'backups/${git.owner}/${git.repo}/${YYYY}${MM}${DD}.tar'
+# => backups/sakamossan/get-path.js/20260621.tar
+```
 
 ## Security
 

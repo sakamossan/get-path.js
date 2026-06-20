@@ -2,7 +2,12 @@ import os from "node:os";
 import path from "node:path";
 import { ok, err, type Result } from "neverthrow";
 import { dateVars } from "./date-vars.js";
-import { getGitInfo, templateNeedsGit } from "./git.js";
+import {
+  getGitInfo,
+  getGitRemoteInfo,
+  templateNeedsGit,
+  templateNeedsGitRemote,
+} from "./git.js";
 
 export async function buildVariables(
   template: string,
@@ -28,7 +33,20 @@ export async function buildVariables(
         `Error: git.* is used but ${fullpath} is not a git repository`
       );
     }
-    vars.git = gitResult.value;
+    const git = gitResult.value;
+
+    if (templateNeedsGitRemote(template)) {
+      const remoteResult = await getGitRemoteInfo();
+      if (remoteResult.isErr()) {
+        return err(
+          `Error: git.owner/git.repo is used but ${remoteResult.error}`
+        );
+      }
+      git.owner = remoteResult.value.owner;
+      git.repo = remoteResult.value.repo;
+    }
+
+    vars.git = git;
   }
 
   return ok(vars);
