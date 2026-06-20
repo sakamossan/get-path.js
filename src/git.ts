@@ -76,8 +76,28 @@ export async function getGitRemoteInfo(): Promise<
   return ok(parsed);
 }
 
+/**
+ * Path from the repository root (where `.git` lives) to the current directory.
+ * Returns "" at the repository root. Trailing slash from `--show-prefix`
+ * is stripped so the value composes cleanly inside path templates.
+ */
+export async function getRepoRelativePath(): Promise<Result<string, string>> {
+  try {
+    const prefix = (
+      await $({ quiet: true })`git rev-parse --show-prefix`
+    ).stdout.trim();
+    return ok(prefix.replace(/\/+$/, ""));
+  } catch {
+    return err("Not a git repository (or git command failed)");
+  }
+}
+
 export function templateNeedsGit(template: string): boolean {
   return /\bgit\./.test(template);
+}
+
+export function templateNeedsRepoRoot(template: string): boolean {
+  return /\bcwd\.fromRepoRoot\b/.test(template);
 }
 
 export function templateNeedsGitRemote(template: string): boolean {

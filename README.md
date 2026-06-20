@@ -79,6 +79,14 @@ Templates use JS template literal `${...}` syntax. Internally evaluated via Func
 | `cwd.fullpath` | Full path from `process.cwd()` |
 | `cwd.basename` | Current directory name |
 | `cwd.parentDir` | Parent directory name |
+| `cwd.fromRepoRoot` | Path from the git repository root to the current directory (empty at the root) |
+
+`cwd.fromRepoRoot` is useful in monorepos. It is the path from the repository root (where `.git` lives) to the current directory, e.g. `packages/foo`, and an empty string at the repository root. It is resolved only when the template uses it; using it outside a git repository results in an error.
+
+```bash
+get-path.js 'artifacts/${cwd.fromRepoRoot}/${YYYY}${MM}${DD}.log'
+# => artifacts/packages/foo/20260621.log
+```
 
 ### `env` — Environment variables
 

@@ -5,8 +5,10 @@ import { dateVars } from "./date-vars.js";
 import {
   getGitInfo,
   getGitRemoteInfo,
+  getRepoRelativePath,
   templateNeedsGit,
   templateNeedsGitRemote,
+  templateNeedsRepoRoot,
 } from "./git.js";
 
 export async function buildVariables(
@@ -15,16 +17,28 @@ export async function buildVariables(
 ): Promise<Result<Record<string, unknown>, string>> {
   const fullpath = process.cwd();
 
+  const cwd: Record<string, unknown> = {
+    fullpath,
+    basename: path.basename(fullpath),
+    parentDir: path.basename(path.dirname(fullpath)),
+  };
+
   const vars: Record<string, unknown> = {
     env: process.env,
-    cwd: {
-      fullpath,
-      basename: path.basename(fullpath),
-      parentDir: path.basename(path.dirname(fullpath)),
-    },
+    cwd,
     os,
     ...dateVars(date),
   };
+
+  if (templateNeedsRepoRoot(template)) {
+    const result = await getRepoRelativePath();
+    if (result.isErr()) {
+      return err(
+        `Error: cwd.fromRepoRoot is used but ${fullpath} is not a git repository`
+      );
+    }
+    cwd.fromRepoRoot = result.value;
+  }
 
   if (templateNeedsGit(template)) {
     const gitResult = await getGitInfo();

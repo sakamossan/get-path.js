@@ -3,6 +3,7 @@ import {
   parseGitRemote,
   templateNeedsGit,
   templateNeedsGitRemote,
+  templateNeedsRepoRoot,
 } from "../src/git";
 
 describe("parseGitRemote", () => {
@@ -75,5 +76,13 @@ describe("templateNeedsGitRemote", () => {
     expect(templateNeedsGitRemote("${git.repo}/x")).toBe(true);
     expect(templateNeedsGitRemote("${git.branch}/x")).toBe(false);
     expect(templateNeedsGitRemote("${git.commit.short}")).toBe(false);
+  });
+});
+
+describe("templateNeedsRepoRoot", () => {
+  test("detects cwd.fromRepoRoot only", () => {
+    expect(templateNeedsRepoRoot("${cwd.fromRepoRoot}/x")).toBe(true);
+    expect(templateNeedsRepoRoot("${cwd.basename}")).toBe(false);
+    expect(templateNeedsRepoRoot("${git.branch}")).toBe(false);
   });
 });
