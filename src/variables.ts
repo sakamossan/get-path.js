@@ -11,17 +11,29 @@ import {
   templateNeedsRepoRoot,
 } from "./git.js";
 
-export async function buildVariables(
-  template: string,
-  date: Date
-): Promise<Result<Record<string, unknown>, string>> {
+/** Non-git cwd variables. Shared so `--help`'s live catalog can't drift from
+ * the values templates actually receive. */
+export function cwdVars(): {
+  fullpath: string;
+  basename: string;
+  parentDir: string;
+} {
   const fullpath = process.cwd();
-
-  const cwd: Record<string, unknown> = {
+  return {
     fullpath,
     basename: path.basename(fullpath),
     parentDir: path.basename(path.dirname(fullpath)),
   };
+}
+
+export async function buildVariables(
+  template: string,
+  date: Date
+): Promise<Result<Record<string, unknown>, string>> {
+  const base = cwdVars();
+  const fullpath = base.fullpath;
+
+  const cwd: Record<string, unknown> = { ...base };
 
   const vars: Record<string, unknown> = {
     env: process.env,

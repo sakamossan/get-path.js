@@ -1,26 +1,11 @@
-import { err, type Result } from "neverthrow";
+import { ok, err, type Result } from "neverthrow";
+import { USAGE, renderHelp } from "./help.js";
 import { handleGet } from "./subcommands/get.js";
 import { handleList } from "./subcommands/list.js";
 import { handleWrite } from "./subcommands/write.js";
 
 const SUBCOMMANDS = ["get", "list", "write"] as const;
 type Subcommand = (typeof SUBCOMMANDS)[number];
-
-const USAGE = [
-  "Usage: get-path [subcommand] [options] <template>",
-  "",
-  "Subcommands:",
-  "  get   (default) Evaluate template and output the result",
-  "  list  Evaluate template for date range, glob expand, output existing paths",
-  "  write Write stdin to the path generated from template",
-  "",
-  "Options (list):",
-  "  --since YYYY-MM-DD  Start date (default: today)",
-  "  --until YYYY-MM-DD  End date (default: today)",
-  "",
-  "Options (write):",
-  "  --append  Append to file instead of overwriting",
-].join("\n");
 
 type Argv = {
   _: string[];
@@ -32,7 +17,7 @@ type Argv = {
 
 export async function run(argv: Argv): Promise<Result<string, string>> {
   if (argv.help) {
-    return err(USAGE);
+    return ok(await renderHelp());
   }
 
   let subcommand: Subcommand;
@@ -49,7 +34,9 @@ export async function run(argv: Argv): Promise<Result<string, string>> {
   }
 
   if (!template) {
-    return err(`Error: template is required\n\n${USAGE}`);
+    return err(
+      `Error: template is required\n\n${USAGE}\n\nRun get-path.js --help for the full variable list.`
+    );
   }
 
   switch (subcommand) {

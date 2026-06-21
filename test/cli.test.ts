@@ -18,6 +18,12 @@ describe("cli run", () => {
     expect(result._unsafeUnwrap()).toMatch(/^hello-\d{4}$/);
   });
 
+  test("--help returns the live variable catalog on stdout (ok)", async () => {
+    const result = await run({ _: [], help: true });
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toContain("Template Variables");
+  });
+
   test("returns error when template is missing", async () => {
     const result = await run({ _: [] });
     expect(result.isErr()).toBe(true);
